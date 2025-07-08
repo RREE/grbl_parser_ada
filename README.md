@@ -1,2 +1,4 @@
-# grbl_parser_ada
-A parser for all output messages from GRBL
+# GRBL Parser Library in Ada
+A parser for all output messages from GRBL.
+
+

@@ -1,0 +1,17 @@
+name = "grbl_parser_ada"
+description = "Parser for GRBL messages"
+version = "0.1.0-dev"
+
+authors = ["Rolf Ebert"]
+maintainers = ["Rolf Ebert <rolf.ebert.gcc@gmx.de>"]
+maintainers-logins = ["RREE"]
+licenses = "MIT"
+website = ""
+project-files = ["grbl_parser.gpr"]
+tags = ["embedded", "grbl", "gcode", "cnc", "parser"]
+
+# [build-switches]
+# "*".style_checks = ["-gnatyM96"]
+
+[[depends-on]]
+simple_components = "^4.68.0"

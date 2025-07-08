@@ -1,0 +1,16 @@
+name = "grbl_parser_test"
+description = "Tests for the parser for FluidNC's messages"
+version = "0.1.0-dev"
+
+authors = ["Rolf Ebert"]
+maintainers = ["Rolf Ebert <rolf.ebert.gcc@gmx.de>"]
+maintainers-logins = ["RREE"]
+licenses = "MIT"
+website = ""
+tags = ["embedded", "test", "example", "parser"]
+
+[[depends-on]]
+grbl_parser_ada = "*"
+
+[[pins]]
+grbl_parser_ada = { path = ".." }

@@ -1,5 +1,14 @@
-# Object file
+*.tmp.md
+*~
 *.o
-
-# Ada Library Information
 *.ali
+
+/obj/
+/lib/
+/alire/
+/config/
+/test/obj/
+/test/lib/
+/test/bin/
+/test/alire/
+/test/config/
