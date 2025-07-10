@@ -37,8 +37,8 @@ package Grbl_Parser is
       Buf_Index        : Natural := 1;
    end record;
 
-   procedure Init (State : out Parser_State);
-   procedure Feed_Char (State : in out Parser_State; C : Character);
-   procedure Parse_Line (State : in out Parser_State; Line : String);
+   procedure Init (S : out Parser_State);
+   procedure Feed_Char (S : in out Parser_State; C : Character);
+   procedure Parse_Line (S : in out Parser_State; Line : String);
 
 end Grbl_Parser;
