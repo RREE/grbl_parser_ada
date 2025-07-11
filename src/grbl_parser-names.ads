@@ -1,6 +1,6 @@
 pragma Style_Checks ("M120");
-pragma Style_Checks ("T"); -- don't check token spacing
-pragma Style_Checks ("U"); -- don't check unnecessary blan lines
+pragma Style_Checks ("-t"); -- don't check token spacing
+pragma Style_Checks ("-u"); -- don't check unnecessary blan lines
 
 package Grbl_Parser.Names is
 
