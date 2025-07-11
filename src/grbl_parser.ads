@@ -1,44 +1,44 @@
 package Grbl_Parser is
 
-   type Position is record
-      X : Float := 0.0;
-      Y : Float := 0.0;
-      Z : Float := 0.0;
-   end record;
+   subtype Axis_Range is Integer range 0 .. 7;
+
+   Axis_Name : constant array (Axis_Range) of Character :=
+     ('X', 'Y', 'Z', 'A', 'B', 'C', 'D', 'E');
+
+   type Position is array (Axis_Range range <>) of Float;
 
    type Machine_State is (Idle,
-                          Run,
-                          Hold,
-                          Home,
                           Alarm,
                           Check,
+                          Homing,
+                          Run,
+                          Jog,
+                          Hold,
                           Door,
                           Sleep,
                           Unknown);
 
-   Max_Version_Length : constant := 32;
-   Max_Message_Length : constant := 64;
    Max_Line_Length    : constant := 128;
 
-   subtype Version_String_Range is Positive range 1 .. Max_Version_Length;
-   subtype Message_String_Range is Positive range 1 .. Max_Message_Length;
    subtype Line_String_Range is Positive range 1 .. Max_Line_Length;
 
-   type Parser_State is record
-      Machine_Position : Position;
-      Work_Position    : Position;
-      State            : Machine_State;
-      Version          : String (Version_String_Range);
-      Version_Length   : Natural := 0;
-      Alarm_Code       : Integer := 0;
-      Message          : String (Message_String_Range);
-      Message_Length   : Natural := 0;
-      Line_Buffer      : String (Line_String_Range);
-      Buf_Index        : Natural := 1;
-   end record;
+   procedure Parse_Line (Line : String);
 
-   procedure Init (S : out Parser_State);
-   procedure Feed_Char (S : in out Parser_State; C : Character);
-   procedure Parse_Line (S : in out Parser_State; Line : String);
+   --
+   --  callbacks
+   --
 
+   --  [MSG:   ]
+   type Handle_Msg_Profile is access procedure (Command : String; Arg : String);
+   Handle_Msg : Handle_Msg_Profile;
+
+   type Handle_Alarm_Profile is access procedure (Code : Integer);
+   Handle_Alarm : Handle_Alarm_Profile;
+
+   type Handle_Others_Profile is access procedure (Other : String);
+   Handle_Others : Handle_Others_Profile;
+
+   type Handle_Position_Profile is access procedure (Pos : Position);
+   Handle_Machine_Position : Handle_Position_Profile;
+   Handle_Work_Position    : Handle_Position_Profile;
 end Grbl_Parser;
