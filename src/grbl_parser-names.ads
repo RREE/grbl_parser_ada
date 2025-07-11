@@ -1,3 +1,7 @@
+pragma Style_Checks ("M120");
+pragma Style_Checks ("T"); -- don't check token spacing
+pragma Style_Checks ("U"); -- don't check unnecessary blan lines
+
 package Grbl_Parser.Names is
 
    type String_Access is access constant String;

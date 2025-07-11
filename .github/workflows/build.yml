@@ -20,6 +20,6 @@ jobs:
       with:
         version: 2.1.0
         
-    - run: alr build --validation
+    - run: alr build --development
 
     - run: cd test & alr exec ./bin/test_msg
