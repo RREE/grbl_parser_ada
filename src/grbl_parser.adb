@@ -1,7 +1,7 @@
 with Strings_Edit;
 with Strings_Edit.Integers;
 with Strings_Edit.Floats;
-with Ada.Text_IO;  use Ada.Text_IO;
+--  with Ada.Text_IO;  use Ada.Text_IO;
 
 package body Grbl_Parser is
 
@@ -11,10 +11,10 @@ package body Grbl_Parser is
       Pos : Line_String_Range := Line'First;
 
       procedure Parse_Position (Into : out Position) is
-         use Strings_Edit.Floats;
+         --  use Strings_Edit.Floats;
       begin
          for Axis in Into'Range loop
-            Get (Line, Pos, Into (Axis));
+            Strings_Edit.Floats.Get (Line, Pos, Into (Axis));
             if Line (Pos) = ',' then  --  skip ','
                Pos := Pos + 1;
             else
@@ -23,12 +23,9 @@ package body Grbl_Parser is
          end loop;
       end Parse_Position;
 
-   begin
-      --  Status report
-      if Line (Line'First) = '<' and then Line (Line'Last) = '>' then
-         Pos := Pos + 1;
+      procedure Parse_Status is
+      begin
          loop
-            Put_Line ("pos:" & Pos'Image);
             exit when Pos >= Line'Last - 1;
 
             if Line (Pos) = '|' then
@@ -36,28 +33,35 @@ package body Grbl_Parser is
             end if;
 
             if Is_Prefix ("Idle", Line, Pos) then
-               --  S.State := Idle;
+               if Handle_State /= null then Handle_State ("Idle"); end if;
                Pos := Pos + 4;
+
             elsif Is_Prefix ("Run", Line, Pos) then
-               --  S.State := Run;
+               if Handle_State /= null then Handle_State ("Run"); end if;
                Pos := Pos + 3;
+
             elsif Is_Prefix ("Hold", Line, Pos) then
-               --  S.State := Hold;
+               if Handle_State /= null then Handle_State ("Hold"); end if;
                Pos := Pos + 4;
+
             elsif Is_Prefix ("Door", Line, Pos) then
-               --  S.State := Door;
+               if Handle_State /= null then Handle_State ("Door"); end if;
                Pos := Pos + 4;
+
             elsif Is_Prefix ("Alarm", Line, Pos) then
-               --  S.State := Alarm;
+               if Handle_State /= null then Handle_State ("Alarm"); end if;
                Pos := Pos + 5;
+
             elsif Is_Prefix ("Check", Line, Pos) then
-               --  S.State := Check;
+               if Handle_State /= null then Handle_State ("Check"); end if;
                Pos := Pos + 5;
+
             elsif Is_Prefix ("Homing", Line, Pos) then
-               --  S.State := Homing;
+               if Handle_State /= null then Handle_State ("Homing"); end if;
                Pos := Pos + 4;
+
             elsif Is_Prefix ("Sleep", Line, Pos) then
-               --  S.State := Sleep;
+               if Handle_State /= null then Handle_State ("Sleep"); end if;
                Pos := Pos + 5;
 
             elsif Is_Prefix ("MPos:", Line, Pos) then
@@ -84,6 +88,22 @@ package body Grbl_Parser is
 
             end if;
          end loop;
+      end Parse_Status;
+
+   begin
+      if Line'Length = 0 then
+         null;
+
+      --  "ok"
+      elsif Is_Prefix ("ok", Line, Pos) then
+         if Handle_OK /= null then
+            Handle_OK.all;
+         end if;
+
+      --  Status report
+      elsif Line (Line'First) = '<' and then Line (Line'Last) = '>' then
+         Pos := Pos + 1;
+         Parse_Status;
 
       --  Start-up
       elsif Is_Prefix ("Grbl ", Line) then

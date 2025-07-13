@@ -1,3 +1,5 @@
+with Interfaces;
+
 package Grbl_Parser is
 
    subtype Axis_Range is Integer range 0 .. 7;
@@ -19,14 +21,32 @@ package Grbl_Parser is
                           Unknown);
 
    Max_Line_Length    : constant := 128;
-
    subtype Line_String_Range is Positive range 1 .. Max_Line_Length;
 
    procedure Parse_Line (Line : String);
 
    --
+   --  communication to FluidNC
+   --
+   subtype Byte is Interfaces.Unsigned_8;
+
+   type Put_Profile is access procedure (Data : Byte);
+   Put : Put_Profile;
+   Send_Realtime_Command : Put_Profile renames Put;
+
+   type Get_Profile is access function return Byte;
+   Get : Get_Profile;
+
+   --
    --  callbacks
    --
+
+   type Empty_Profile is access procedure;
+   Handle_OK : Empty_Profile;
+
+   type Handle_Single_String_Profile is access procedure (Data : String);
+   Handle_State : Handle_Single_String_Profile;
+
 
    --  [MSG:   ]
    type Handle_Msg_Profile is access procedure (Command : String; Arg : String);
@@ -35,10 +55,10 @@ package Grbl_Parser is
    type Handle_Alarm_Profile is access procedure (Code : Integer);
    Handle_Alarm : Handle_Alarm_Profile;
 
-   type Handle_Others_Profile is access procedure (Other : String);
-   Handle_Others : Handle_Others_Profile;
+   Handle_Others : Handle_Single_String_Profile;
 
    type Handle_Position_Profile is access procedure (Pos : Position);
    Handle_Machine_Position : Handle_Position_Profile;
    Handle_Work_Position    : Handle_Position_Profile;
+   Handle_Offset           : Handle_Position_Profile;
 end Grbl_Parser;
