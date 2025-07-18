@@ -2,6 +2,7 @@
 *~
 *.o
 *.ali
+*.tmp.md
 
 /obj/
 /lib/

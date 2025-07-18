@@ -1,7 +1,8 @@
 with Strings_Edit;
 with Strings_Edit.Integers;
 with Strings_Edit.Floats;
---  with Ada.Text_IO;  use Ada.Text_IO;
+with Ada.Text_IO;  use Ada.Text_IO;
+with System.Dim;
 
 package body Grbl_Parser is
 
@@ -10,20 +11,21 @@ package body Grbl_Parser is
 
       Pos : Line_String_Range := Line'First;
 
-      procedure Parse_Position (Into : out Position) is
-         --  use Strings_Edit.Floats;
+      procedure Parse_Position (Into : out Position; Dim : out Axis_Range) is
       begin
          for Axis in Into'Range loop
             Strings_Edit.Floats.Get (Line, Pos, Into (Axis));
             if Line (Pos) = ',' then  --  skip ','
                Pos := Pos + 1;
             else
+               Dim := Axis;
                exit;
             end if;
          end loop;
       end Parse_Position;
 
       procedure Parse_Status is
+         Last : constant Line_String_Range := Line'Last - 1;
       begin
          loop
             exit when Pos >= Line'Last - 1;
@@ -67,25 +69,53 @@ package body Grbl_Parser is
             elsif Is_Prefix ("MPos:", Line, Pos) then
                declare
                   Machine_Position : Position (0 .. 5);
+                  Dim : Axis_Range;
                begin
                   Pos := Pos + 5;
-                  Parse_Position (Machine_Position);
-                  if Handle_Machine_Position /= null then
-                     Handle_Machine_Position (Machine_Position);
+                  Parse_Position (Machine_Position, Dim);
+                  if Handle_Machine_Pos /= null then
+                     Handle_Machine_Pos (Machine_Position (0 .. Dim));
                   end if;
                end;
 
-            elsif Is_Prefix ("WPos:", Line, Pos) then
+            elsif Is_Prefix ("WCO:", Line, Pos) then
                declare
-                  Work_Position : Position (0 .. 5);
+                  Work_Offset : Position (0 .. 5);
+                  Dim : Axis_Range;
                begin
                   Pos := Pos + 5;
-                  Parse_Position (Work_Position);
-                  if Handle_Work_Position /= null then
-                     Handle_Work_Position (Work_Position);
+                  Parse_Position (Work_Offset, Dim);
+                  if Handle_Work_Offset /= null then
+                     Handle_Work_Offset (Work_Offset (0 .. Dim));
                   end if;
                end;
 
+            elsif Is_Prefix ("FS:", Line, Pos) then
+               declare
+                  Feedrate : Natural;
+                  Spindlespeed : Natural;
+                  package SEI renames Strings_Edit.Integers;
+               begin
+                  Pos := Pos + 3;
+                  SEI.Get (Line, Pos, Feedrate);
+                  if Line (Pos) = ',' then Pos := Pos + 1; end if;
+                  SEI.Get (Line, Pos, Spindlespeed);
+
+                  if Handle_Feed_Spindle /= null then
+                     Handle_Feed_Spindle (Feedrate, Spindlespeed);
+                  end if;
+               end;
+            else
+               declare
+                  U : constant Line_String_Range := Pos;
+               begin
+                  loop
+                     exit when Line (Pos) = '|';
+                     exit when Pos > Last;
+                     Pos := Pos + 1;
+                  end loop;
+                  Put_Line ("unknown:" & Line (U .. Pos));
+               end;
             end if;
          end loop;
       end Parse_Status;

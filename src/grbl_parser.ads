@@ -9,17 +9,6 @@ package Grbl_Parser is
 
    type Position is array (Axis_Range range <>) of Float;
 
-   type Machine_State is (Idle,
-                          Alarm,
-                          Check,
-                          Homing,
-                          Run,
-                          Jog,
-                          Hold,
-                          Door,
-                          Sleep,
-                          Unknown);
-
    Max_Line_Length    : constant := 128;
    subtype Line_String_Range is Positive range 1 .. Max_Line_Length;
 
@@ -57,8 +46,11 @@ package Grbl_Parser is
 
    Handle_Others : Handle_Single_String_Profile;
 
+   type Handle_Feed_Spindle_Profile is access procedure (Feed : Natural; Spindle : Natural);
+   Handle_Feed_Spindle : Handle_Feed_Spindle_Profile;
+
    type Handle_Position_Profile is access procedure (Pos : Position);
-   Handle_Machine_Position : Handle_Position_Profile;
-   Handle_Work_Position    : Handle_Position_Profile;
-   Handle_Offset           : Handle_Position_Profile;
+   Handle_Machine_Pos  : Handle_Position_Profile;
+   Handle_Work_Offset  : Handle_Position_Profile;
+   --  Handle_Offset        : Handle_Position_Profile;
 end Grbl_Parser;
