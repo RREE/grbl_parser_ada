@@ -2,7 +2,8 @@ with Strings_Edit;
 with Strings_Edit.Integers;
 with Strings_Edit.Floats;
 with Ada.Text_IO;  use Ada.Text_IO;
-with System.Dim;
+
+pragma Style_Checks ("-S"); --  permit code after "then"
 
 package body Grbl_Parser is
 
@@ -78,6 +79,18 @@ package body Grbl_Parser is
                   end if;
                end;
 
+            elsif Is_Prefix ("WPos:", Line, Pos) then
+               declare
+                  Work_Position : Position (0 .. 5);
+                  Dim : Axis_Range;
+               begin
+                  Pos := Pos + 5;
+                  Parse_Position (Work_Position, Dim);
+                  if Handle_Work_Pos /= null then
+                     Handle_Work_Pos (Work_Position (0 .. Dim));
+                  end if;
+               end;
+
             elsif Is_Prefix ("WCO:", Line, Pos) then
                declare
                   Work_Offset : Position (0 .. 5);
@@ -85,8 +98,8 @@ package body Grbl_Parser is
                begin
                   Pos := Pos + 5;
                   Parse_Position (Work_Offset, Dim);
-                  if Handle_Work_Offset /= null then
-                     Handle_Work_Offset (Work_Offset (0 .. Dim));
+                  if Handle_Offset /= null then
+                     Handle_Offset (Work_Offset (0 .. Dim));
                   end if;
                end;
 
@@ -105,6 +118,7 @@ package body Grbl_Parser is
                      Handle_Feed_Spindle (Feedrate, Spindlespeed);
                   end if;
                end;
+
             else
                declare
                   U : constant Line_String_Range := Pos;
@@ -150,13 +164,13 @@ package body Grbl_Parser is
             Sep : Line_String_Range := Msg_Index'Last;
          begin
             for I in Msg'Range loop
-               if Msg(I) = ':' then
+               if Msg (I) = ':' then
                   Sep := I;
                   exit;
                end if;
             end loop;
             if Handle_Msg /= null then
-               Handle_Msg (Command => Msg(6 .. Sep-1), Arg => Msg(Sep+1 .. Msg'Last));
+               Handle_Msg (S1 => Msg(6 .. Sep-1), S2 => Msg(Sep+1 .. Msg'Last));
             end if;
          end;
 

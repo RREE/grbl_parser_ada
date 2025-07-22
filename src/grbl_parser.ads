@@ -7,7 +7,11 @@ package Grbl_Parser is
    Axis_Name : constant array (Axis_Range) of Character :=
      ('X', 'Y', 'Z', 'A', 'B', 'C', 'D', 'E');
 
-   type Position is array (Axis_Range range <>) of Float;
+   subtype Real is Float;
+   --  use decimal fixed point types if the hardware doen not support floating point types
+   --  type Real is delta 10**-3 digits 7;  --  -9999.999 .. 9999.999;
+
+   type Position is array (Axis_Range range <>) of Real;
 
    Max_Line_Length    : constant := 128;
    subtype Line_String_Range is Positive range 1 .. Max_Line_Length;
@@ -31,26 +35,31 @@ package Grbl_Parser is
    --
 
    type Empty_Profile is access procedure;
+   type Single_Natural_Profile is access procedure (Data : Natural);
+   type Double_Natural_Profile is access procedure (Data1 : Natural; Data2 : Natural);
+   type Single_String_Profile is access procedure (S1 : String);
+   type Double_String_Profile is access procedure (S1, S2 : String);
    Handle_OK : Empty_Profile;
 
-   type Handle_Single_String_Profile is access procedure (Data : String);
-   Handle_State : Handle_Single_String_Profile;
+   Handle_State : Single_String_Profile;
 
+   --  type Handle_Msg_Profile is access procedure (Command : String; Arg : String);
+   Handle_Msg : Double_String_Profile;
 
-   --  [MSG:   ]
-   type Handle_Msg_Profile is access procedure (Command : String; Arg : String);
-   Handle_Msg : Handle_Msg_Profile;
+   --  type Handle_Alarm_Profile is access procedure (Code : Natural);
+   Handle_Alarm : Single_Natural_Profile;
 
-   type Handle_Alarm_Profile is access procedure (Code : Integer);
-   Handle_Alarm : Handle_Alarm_Profile;
+   --  type Handle_Linenum_Profile is access procedure (Line : Natural);
+   Handle_Linenum : Single_Natural_Profile;
 
-   Handle_Others : Handle_Single_String_Profile;
+   Handle_Others : Single_String_Profile;
 
-   type Handle_Feed_Spindle_Profile is access procedure (Feed : Natural; Spindle : Natural);
-   Handle_Feed_Spindle : Handle_Feed_Spindle_Profile;
+   --  type Handle_Feed_Spindle_Profile is access procedure (Feed : Natural; Spindle : Natural);
+   Handle_Feed_Spindle : Double_Natural_Profile;
 
-   type Handle_Position_Profile is access procedure (Pos : Position);
-   Handle_Machine_Pos  : Handle_Position_Profile;
-   Handle_Work_Offset  : Handle_Position_Profile;
-   --  Handle_Offset        : Handle_Position_Profile;
+   type Position_Profile is access procedure (Pos : Position);
+   Handle_Machine_Pos  : Position_Profile;
+   Handle_Work_Pos     : Position_Profile;
+   Handle_Offset       : Position_Profile;
+
 end Grbl_Parser;

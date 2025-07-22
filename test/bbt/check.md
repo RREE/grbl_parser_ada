@@ -22,6 +22,7 @@
  - When I run `./bin/test_cl -l <Idle|MPos:10.000|FS:0,0>`
  - then I get no error 
  - and the output contains `System is in state 'Idle'`
+ - and the output does not contain `Pos Y`
  
 
 ### Scenario : two axes XY
@@ -30,7 +31,7 @@
  - and the output contains `System is in state 'Idle'`
  - and the output contains `Pos X:  1.00000E+01`
  - and the output contains `Pos Y:  0.00000E+00`
- * and the output does not contain `Pos Z:`
+ - and the output does not contain `Pos Z:`
  - and the output contains `Feedrate: 0`
 
 ### Scenario : three axes XYZ

@@ -14,4 +14,7 @@ tags = ["embedded", "grbl", "gcode", "cnc", "parser"]
 # "*".style_checks = ["-gnatyM96"]
 
 [[depends-on]]
-simple_components = "^4.68.0"
+strings_edit = "*"
+
+[[pins]]
+strings_edit = { path = "../strings_edit" }

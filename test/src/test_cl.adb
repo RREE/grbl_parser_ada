@@ -17,7 +17,8 @@ begin
    Grbl_Parser.Handle_State := Handle_State'Access;
    Grbl_Parser.Handle_Feed_Spindle := Handle_Feed_Spindle'Access;
    Grbl_Parser.Handle_Machine_Pos  := Handle_Machine_Pos'Access;
-   Grbl_Parser.Handle_Work_Offset  := Handle_Work_Offset'Access;
+   Grbl_Parser.Handle_Work_Pos     := Handle_Work_Pos'Access;
+   Grbl_Parser.Handle_Offset       := Handle_Offset'Access;
 
    if Argument (1) = "-l" then
       Grbl_Parser.Parse_Line (Argument (2));

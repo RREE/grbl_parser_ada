@@ -18,7 +18,7 @@ package body Handlers is
       Put_Line ("Message received, Command: " & Command & ", Arg: " & Arg);
    end Handle_Message;
 
-   procedure Handle_Alarm (Code : Integer)
+   procedure Handle_Alarm (Code : Natural)
    is
       use Grbl_Parser.Names;
    begin
@@ -46,13 +46,22 @@ package body Handlers is
       end loop;
    end Handle_Machine_Pos;
 
-   procedure Handle_Work_Offset (Pos : Grbl_Parser.Position)
+   procedure Handle_Work_Pos (Pos : Grbl_Parser.Position)
+   is
+      use Grbl_Parser;
+   begin
+      for P in Pos'Range loop
+         Put_Line ("Work position " & Axis_Name (P) & ": " & Pos (P)'Image);
+      end loop;
+   end Handle_Work_Pos;
+
+   procedure Handle_Offset (Pos : Grbl_Parser.Position)
    is
       use Grbl_Parser;
    begin
       for P in Pos'Range loop
          Put_Line ("Offset " & Axis_Name (P) & ": " & Pos (P)'Image);
       end loop;
-   end Handle_Work_Offset;
+   end Handle_Offset;
 
 end Handlers;
