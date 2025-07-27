@@ -15,7 +15,7 @@ package body Handlers is
 
    procedure Handle_Message (Command : String; Arg : String)
    is begin
-      Put_Line ("Message received, Command: " & Command & ", Arg: " & Arg);
+      Put_Line ("Message received, Command: '" & Command & "', Arg: '" & Arg & ''');
    end Handle_Message;
 
    procedure Handle_Alarm (Code : Natural)

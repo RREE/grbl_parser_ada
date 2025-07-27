@@ -13,6 +13,12 @@ package Grbl_Parser is
 
    type Position is array (Axis_Range range <>) of Real;
 
+   type Coordinate_System is
+     (Machine, -- absolute machine coordinates, typically known after homing
+      Work);   -- coordinates realtive to the last manual zero setting
+
+   type Offset_Mode is (G54, G55, G56, G57, G58, G59, G28, G30, G92);
+
    Max_Line_Length    : constant := 128;
    subtype Line_String_Range is Positive range 1 .. Max_Line_Length;
 
@@ -37,29 +43,28 @@ package Grbl_Parser is
    type Empty_Profile is access procedure;
    type Single_Natural_Profile is access procedure (Data : Natural);
    type Double_Natural_Profile is access procedure (Data1 : Natural; Data2 : Natural);
+   type Triple_Natural_Profile is access procedure (Data1 : Natural; Data2 : Natural; Data3 : Natural);
    type Single_String_Profile is access procedure (S1 : String);
    type Double_String_Profile is access procedure (S1, S2 : String);
-   Handle_OK : Empty_Profile;
-
-   Handle_State : Single_String_Profile;
-
-   --  type Handle_Msg_Profile is access procedure (Command : String; Arg : String);
-   Handle_Msg : Double_String_Profile;
-
-   --  type Handle_Alarm_Profile is access procedure (Code : Natural);
-   Handle_Alarm : Single_Natural_Profile;
-
-   --  type Handle_Linenum_Profile is access procedure (Line : Natural);
-   Handle_Linenum : Single_Natural_Profile;
-
-   Handle_Others : Single_String_Profile;
-
-   --  type Handle_Feed_Spindle_Profile is access procedure (Feed : Natural; Spindle : Natural);
-   Handle_Feed_Spindle : Double_Natural_Profile;
-
    type Position_Profile is access procedure (Pos : Position);
+
+   Handle_OK : Empty_Profile;
+   Handle_State : Single_String_Profile;          --  state name
+   Handle_Version_Report : Double_String_Profile; --  GRBL version, FluidNC version
+   Handle_Msg : Double_String_Profile;            --  command, argument
+   Handle_Alarm : Single_Natural_Profile;         --  alarm code
+   Handle_Error : Single_Natural_Profile;         --  error code
+   Handle_Linenum : Single_Natural_Profile;       --  line number
+   Handle_Others : Single_String_Profile;         --  whatever
+   Handle_Feed_Spindle : Double_Natural_Profile;  --  feed rate, spindle speed
+   Handle_Buffers : Double_Natural_Profile;       --  Available, RX_Available
+   Handle_Overrides : Triple_Natural_Profile;     --  Feed ovr, rapid ovr, spindle ovr
+   Handle_Signon : Double_String_Profile;         --  GRBL startup message: version, extra
    Handle_Machine_Pos  : Position_Profile;
    Handle_Work_Pos     : Position_Profile;
    Handle_Offset       : Position_Profile;
+
+   Handle_Status_Start : Empty_Profile;
+   Handle_Status_End : Empty_Profile;
 
 end Grbl_Parser;

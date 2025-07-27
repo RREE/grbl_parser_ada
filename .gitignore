@@ -4,6 +4,7 @@
 *.ali
 *.tmp.md
 \#*\#
+*.md.out
 
 /obj/
 /lib/

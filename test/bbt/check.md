@@ -1,3 +1,4 @@
+## Standards
 ### Scenario : simple OK
 
  - When I run `./bin/test_cl -l ok`
@@ -7,15 +8,29 @@
 ### Scenario : Alarm 3
  - When I run `./bin/test_cl -l ALARM:3`
  - then I get no error 
- - and I get `Alarm received, Abort Cycle`
+ - and the output contains `Alarm received, Abort Cycle`
 
 
 ### Scenario : Alarm 1
  - When I run `./bin/test_cl -l ALARM:1`
  - then I get no error 
- - and I get `Alarm received, Hard Limit`
+ - and the output contains `Alarm received, Hard Limit`
 
+### Scenario : Message wo arg
+ - When I run `./bin/test_cl -l "[MSG: toto]"`
+ - then I get no error 
+ - and the output contains `Message received, Command: 'toto', Arg: ''`
  
+### Scenario : Message with arg
+ - When I run `./bin/test_cl -l "[MSG: toto:ARG]"`
+ - then I get no error 
+ - and the output contains `Message received, Command: 'toto', Arg: 'ARG'`
+ 
+### Scenario : Message with empty arg
+ - When I run `./bin/test_cl -l "[MSG: toto:]"`
+ - then I get no error 
+ - and the output contains `Message received, Command: 'toto', Arg: ''`
+
 ## Maschine coordinates
 
 ### Scenario : one axis X

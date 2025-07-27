@@ -7,6 +7,11 @@ pragma Style_Checks ("-S"); --  permit code after "then"
 
 package body Grbl_Parser is
 
+   package SEI renames Strings_Edit.Integers;
+
+   Work_Offset : Position (0 .. 5) := (others => 0.0);
+   --  has to be remembered across multiple calls to Parse_Status
+
    procedure Parse_Line (Line : String) is
       use Strings_Edit;
 
@@ -28,8 +33,13 @@ package body Grbl_Parser is
       procedure Parse_Status is
          Last : constant Line_String_Range := Line'Last - 1;
       begin
+         if Handle_Status_Start /= null then
+            Handle_Status_Start.all;
+         end if;
+
+         Parse_Status_Line:
          loop
-            exit when Pos >= Line'Last - 1;
+            exit Parse_Status_Line when Pos >= Line'Last - 1;
 
             if Line (Pos) = '|' then
                Pos := Pos + 1;
@@ -93,7 +103,6 @@ package body Grbl_Parser is
 
             elsif Is_Prefix ("WCO:", Line, Pos) then
                declare
-                  Work_Offset : Position (0 .. 5);
                   Dim : Axis_Range;
                begin
                   Pos := Pos + 5;
@@ -103,11 +112,28 @@ package body Grbl_Parser is
                   end if;
                end;
 
+            elsif Is_Prefix ("Ov:", Line, Pos) then
+               declare
+                  Feed_Ovr : Natural;
+                  Rapid_Ovr : Natural;
+                  Spindle_Ovr : Natural;
+               begin
+                  Pos := Pos + 3;
+                  SEI.Get (Line, Pos, Feed_Ovr);
+                  if Line (Pos) = ',' then Pos := Pos + 1; end if;
+                  SEI.Get (Line, Pos, Rapid_Ovr);
+                  if Line (Pos) = ',' then Pos := Pos + 1; end if;
+                  SEI.Get (Line, Pos, Spindle_Ovr);
+
+                  if Handle_Overrides /= null then
+                     Handle_Overrides (Feed_Ovr, Rapid_Ovr, Spindle_Ovr);
+                  end if;
+               end;
+
             elsif Is_Prefix ("FS:", Line, Pos) then
                declare
                   Feedrate : Natural;
                   Spindlespeed : Natural;
-                  package SEI renames Strings_Edit.Integers;
                begin
                   Pos := Pos + 3;
                   SEI.Get (Line, Pos, Feedrate);
@@ -116,6 +142,33 @@ package body Grbl_Parser is
 
                   if Handle_Feed_Spindle /= null then
                      Handle_Feed_Spindle (Feedrate, Spindlespeed);
+                  end if;
+               end;
+
+            elsif Is_Prefix ("Bf:", Line, Pos) then
+               declare
+                  Available : Natural;
+                  Rx_Available : Natural;
+               begin
+                  Pos := Pos + 3;
+                  SEI.Get (Line, Pos, Available);
+                  if Line (Pos) = ',' then Pos := Pos + 1; end if;
+                  SEI.Get (Line, Pos, Rx_Available);
+
+                  if Handle_Buffers /= null then
+                     Handle_Buffers (Available, Rx_Available);
+                  end if;
+               end;
+
+            elsif Is_Prefix ("Ln:", Line, Pos) then
+               declare
+                  Line_Number : Natural;
+               begin
+                  Pos := Pos + 3;
+                  SEI.Get (Line, Pos, Line_Number);
+
+                  if Handle_Linenum /= null then
+                     Handle_Linenum (Line_Number);
                   end if;
                end;
 
@@ -131,10 +184,15 @@ package body Grbl_Parser is
                   Put_Line ("unknown:" & Line (U .. Pos));
                end;
             end if;
-         end loop;
+         end loop Parse_Status_Line;
+
+         if Handle_Status_End /= null then
+            Handle_Status_End.all;
+         end if;
       end Parse_Status;
 
    begin
+      --  ignore empty lines
       if Line'Length = 0 then
          null;
 
@@ -161,16 +219,16 @@ package body Grbl_Parser is
 
             --  Msg may contain a command with arguments. Separator
             --  after the command is a colon ':'.
-            Sep : Line_String_Range := Msg_Index'Last;
+            Sep : Line_String_Range;
+            Start : Line_String_Range := Msg_Index'First;
          begin
-            for I in Msg'Range loop
-               if Msg (I) = ':' then
-                  Sep := I;
-                  exit;
-               end if;
-            end loop;
+            Put_Line ("MESSAGE:'" & Msg & ''');
+            Strings_Edit.Get (Line, Start, ' ');  --  skip blanks
+            Sep := Start;
+            Index (Line, Sep, ':');  --  search colon, if none found, Sep is Msg'Last+1
+            Put_Line ("Start:" & Start'Image & ", Sep:" & Sep'Image & ", " & "Last:" & Msg'Last'Image);
             if Handle_Msg /= null then
-               Handle_Msg (S1 => Msg(6 .. Sep-1), S2 => Msg(Sep+1 .. Msg'Last));
+               Handle_Msg (S1 => Msg(Start .. Sep-1), S2 => Msg(Sep+1 .. Msg'Last));
             end if;
          end;
 
@@ -180,9 +238,20 @@ package body Grbl_Parser is
             Alarm_Code : Integer;
          begin
             Pos := Pos + 6;
-            Strings_Edit.Integers.Get (Line, Pos, Alarm_Code);
+            SEI.Get (Line, Pos, Alarm_Code);
             if Handle_Alarm /= null then
                Handle_Alarm (Alarm_Code);
+            end if;
+         end;
+
+      elsif Is_Prefix ("error:", Line) then
+         declare
+            Error_Code : Integer;
+         begin
+            Pos := Pos + 6;
+            SEI.Get (Line, Pos, Error_Code);
+            if Handle_Error /= null then
+               Handle_Error (Error_Code);
             end if;
          end;
 
