@@ -1,3 +1,4 @@
+with Ada.Strings.Maps;
 with Strings_Edit;
 with Strings_Edit.Integers;
 with Strings_Edit.Floats;
@@ -210,6 +211,44 @@ package body Grbl_Parser is
       --  Start-up
       elsif Is_Prefix ("Grbl ", Line) then
          null;
+
+      --  Version
+      elsif Is_Prefix ("[VER:", Line) and then Line (Line'Last) = ']' then
+         declare
+            subtype Version_Index is Positive range 6 .. Line'Last - 1;
+            Version_Line : constant String := Line (Version_Index);
+
+            --  Version_Line may contain a second version for FluidNC. Separator
+            --  a blank ' '.
+            Sep : Line_String_Range;
+            GRBL_Start : Line_String_Range := Version_Index'First;
+            GRBL_End   : Line_String_Range := Version_Index'First;
+            FNC_Start  : Line_String_Range := Version_Index'First;
+            FNC_End    : Line_String_Range := Version_Index'First;
+            use Ada.Strings.Maps;
+            Sep_Set : constant Character_Set := To_Set (' ' & ASCII.LF & ASCII.HT & ASCII.CR);
+            FNC_End_Set : constant Character_Set := To_Set (" :" & ASCII.LF & ASCII.HT & ASCII.CR);
+         begin
+            Put_Line ("VERSION:'" & Version_Line & ''');
+            Strings_Edit.Get (Line, GRBL_Start, ' ');  --  skip blanks
+            GRBL_End := GRBL_Start;
+            Index (Version_Line, GRBL_End, Sep_Set);  --  search separator
+            FNC_Start := GRBL_End + 1;
+            GRBL_End := GRBL_End - 1;
+            Put_Line ("GRBL:" & Version_Line (GRBL_Start..GRBL_End));
+            if Is_Prefix ("FluidNC ", Version_Line, FNC_Start) then
+               FNC_Start := FNC_Start + 8;
+               FNC_End := FNC_Start;
+               Index (Version_Line, FNC_End, FNC_End_Set);
+               FNC_End := FNC_End - 1;
+               Put_Line ("FNC:" & Version_Line (FNC_Start..FNC_End));
+            end if;
+
+            if Handle_Version_Report /= null then
+               Handle_Version_Report (S1 => Version_Line(GRBL_Start .. GRBL_End),
+                                      S2 => Version_Line(FNC_Start .. FNC_End));
+            end if;
+         end;
 
       --  Message
       elsif Is_Prefix ("[MSG:", Line) and then Line (Line'Last) = ']' then

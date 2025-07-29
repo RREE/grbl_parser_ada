@@ -48,18 +48,18 @@ package Grbl_Parser is
    type Double_String_Profile is access procedure (S1, S2 : String);
    type Position_Profile is access procedure (Pos : Position);
 
-   Handle_OK : Empty_Profile;
-   Handle_State : Single_String_Profile;          --  state name
+   Handle_OK           : Empty_Profile;
+   Handle_State        : Single_String_Profile;   --  state name
    Handle_Version_Report : Double_String_Profile; --  GRBL version, FluidNC version
-   Handle_Msg : Double_String_Profile;            --  command, argument
-   Handle_Alarm : Single_Natural_Profile;         --  alarm code
-   Handle_Error : Single_Natural_Profile;         --  error code
-   Handle_Linenum : Single_Natural_Profile;       --  line number
-   Handle_Others : Single_String_Profile;         --  whatever
+   Handle_Msg          : Double_String_Profile;   --  command, argument
+   Handle_Alarm        : Single_Natural_Profile;  --  alarm code
+   Handle_Error        : Single_Natural_Profile;  --  error code
+   Handle_Linenum      : Single_Natural_Profile;  --  line number
+   Handle_Others       : Single_String_Profile;   --  whatever
    Handle_Feed_Spindle : Double_Natural_Profile;  --  feed rate, spindle speed
-   Handle_Buffers : Double_Natural_Profile;       --  Available, RX_Available
-   Handle_Overrides : Triple_Natural_Profile;     --  Feed ovr, rapid ovr, spindle ovr
-   Handle_Signon : Double_String_Profile;         --  GRBL startup message: version, extra
+   Handle_Buffers      : Double_Natural_Profile;  --  Available, RX_Available
+   Handle_Overrides    : Triple_Natural_Profile;  --  Feed ovr, rapid ovr, spindle ovr
+   Handle_Signon       : Double_String_Profile;   --  GRBL startup message: version, extra
    Handle_Machine_Pos  : Position_Profile;
    Handle_Work_Pos     : Position_Profile;
    Handle_Offset       : Position_Profile;

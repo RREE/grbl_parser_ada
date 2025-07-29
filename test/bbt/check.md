@@ -31,6 +31,11 @@
  - then I get no error 
  - and the output contains `Message received, Command: 'toto', Arg: ''`
 
+### Scenario : Version + FluidNC
+ - When I run `./bin/test_cl -l "[VER:3.4 FluidNC v3.4.5:]"`
+ - then I get no error 
+ - and the output contains `Grbl version: '3.4', FluidNC version: 'v3.4.5'`
+
 ## Maschine coordinates
 
 ### Scenario : one axis X

@@ -13,10 +13,20 @@ package body Handlers is
       Put_Line ("System is in state '" & State & ''');
    end Handle_State;
 
+   procedure Handle_Others (Unknown : String)
+   is begin
+      Put_Line ("Unknown field '" & Unknown & ''');
+   end Handle_Others;
+
    procedure Handle_Message (Command : String; Arg : String)
    is begin
       Put_Line ("Message received, Command: '" & Command & "', Arg: '" & Arg & ''');
    end Handle_Message;
+
+   procedure Handle_Version_Report (Grbl_Version : String; FluidNC_Version : String)
+   is begin
+      Put_Line ("Grbl version: '" & Grbl_Version & "', FluidNC version: '" & FluidNC_Version & ''');
+   end Handle_Version_Report;
 
    procedure Handle_Alarm (Code : Natural)
    is
