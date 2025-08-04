@@ -146,6 +146,29 @@ package body Grbl_Parser is
                   end if;
                end;
 
+            elsif Is_Prefix ("A:", Line, Pos) then
+               declare
+                  Spindle : Spindle_Direction := Off;
+                  Flood   : Boolean := False;
+                  Mist    : Boolean := False;
+               begin
+                  Pos := Pos + 2;
+                  loop
+                     case Line (Pos) is
+                     when 'S' => Spindle := CW;
+                     when 'C' => Spindle := CCW;
+                     when 'F' => Flood := True;
+                     when 'M' => Mist := True;
+                     when others => exit;
+                     end case;
+                     Pos := Pos + 1;
+                  end loop;
+
+                  if Handle_Spindle_Coolant /= null then
+                     Handle_Spindle_Coolant (Spindle, Flood, Mist);
+                  end if;
+               end;
+
             elsif Is_Prefix ("Bf:", Line, Pos) then
                declare
                   Available : Natural;

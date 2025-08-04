@@ -11,5 +11,7 @@ package Handlers is
    procedure Handle_Machine_Pos (Pos : Grbl_Parser.Position);
    procedure Handle_Work_Pos (Pos : Grbl_Parser.Position);
    procedure Handle_Offset (Pos : Grbl_Parser.Position);
+   procedure Handle_Spindle_Coolant (Spindle : Grbl_Parser.Spindle_Direction;
+                                     Flood : Boolean; Mist : Boolean);
 
 end Handlers;

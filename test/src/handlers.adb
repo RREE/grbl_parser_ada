@@ -74,4 +74,13 @@ package body Handlers is
       end loop;
    end Handle_Offset;
 
+   procedure Handle_Spindle_Coolant (Spindle : Grbl_Parser.Spindle_Direction;
+                                     Flood : Boolean; Mist : Boolean)
+   is
+   begin
+      Put_Line ("Spindle: " & Spindle'Image &
+                ", Flood: " & (if Flood then "On" else "Off") &
+                ", Mist: " & (if Mist then "On" else "Off"));
+   end Handle_Spindle_Coolant;
+
 end Handlers;

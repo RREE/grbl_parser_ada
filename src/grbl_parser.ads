@@ -19,6 +19,8 @@ package Grbl_Parser is
 
    type Offset_Mode is (G54, G55, G56, G57, G58, G59, G28, G30, G92);
 
+   type Spindle_Direction is (Off, CW, CCW);
+
    Max_Line_Length    : constant := 128;
    subtype Line_String_Range is Positive range 1 .. Max_Line_Length;
 
@@ -46,6 +48,8 @@ package Grbl_Parser is
    type Triple_Natural_Profile is access procedure (Data1 : Natural; Data2 : Natural; Data3 : Natural);
    type Single_String_Profile is access procedure (S1 : String);
    type Double_String_Profile is access procedure (S1, S2 : String);
+   type Spindle_Coolant_Profile is access procedure (Spindle : Spindle_Direction;
+                                                     Flood : Boolean; Mist : Boolean);
    type Position_Profile is access procedure (Pos : Position);
 
    Handle_OK           : Empty_Profile;
@@ -60,6 +64,7 @@ package Grbl_Parser is
    Handle_Buffers      : Double_Natural_Profile;  --  Available, RX_Available
    Handle_Overrides    : Triple_Natural_Profile;  --  Feed ovr, rapid ovr, spindle ovr
    Handle_Signon       : Double_String_Profile;   --  GRBL startup message: version, extra
+   Handle_Spindle_Coolant : Spindle_Coolant_Profile;  --  Spindle, Flood, Mist
    Handle_Machine_Pos  : Position_Profile;
    Handle_Work_Pos     : Position_Profile;
    Handle_Offset       : Position_Profile;
