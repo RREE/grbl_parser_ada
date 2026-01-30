@@ -1,3 +1,4 @@
+with Model_Structure;
 with Grbl_Parser;
 with Handlers;         use Handlers;
 with Ada.Command_Line;

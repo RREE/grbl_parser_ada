@@ -8,9 +8,9 @@ package body Handlers is
       Put_Line ("ok");
    end Handle_OK;
 
-   procedure Handle_State (State : String)
+   procedure Handle_State (State : Model_Structure.Machine_State)
    is begin
-      Put_Line ("System is in state '" & State & ''');
+      Put_Line ("System is in state '" & State'Image & ''');
    end Handle_State;
 
    procedure Handle_Others (Unknown : String)
@@ -47,34 +47,34 @@ package body Handlers is
       Put_Line ("Spindlespeed:" & Spindlespeed'Image);
    end Handle_Feed_Spindle;
 
-   procedure Handle_Machine_Pos (Pos : Grbl_Parser.Position)
+   procedure Handle_Machine_Pos (Pos : Model_Structure.Position)
    is
-      use Grbl_Parser;
+      use Model_Structure;
    begin
       for P in Pos'Range loop
          Put_Line ("Pos " & Axis_Name (P) & ": " & Pos (P)'Image);
       end loop;
    end Handle_Machine_Pos;
 
-   procedure Handle_Work_Pos (Pos : Grbl_Parser.Position)
+   procedure Handle_Work_Pos (Pos : Model_Structure.Position)
    is
-      use Grbl_Parser;
+      use Model_Structure;
    begin
       for P in Pos'Range loop
          Put_Line ("Work position " & Axis_Name (P) & ": " & Pos (P)'Image);
       end loop;
    end Handle_Work_Pos;
 
-   procedure Handle_Offset (Pos : Grbl_Parser.Position)
+   procedure Handle_Offset (Pos : Model_Structure.Position)
    is
-      use Grbl_Parser;
+      use Model_Structure;
    begin
       for P in Pos'Range loop
          Put_Line ("Offset " & Axis_Name (P) & ": " & Pos (P)'Image);
       end loop;
    end Handle_Offset;
 
-   procedure Handle_Spindle_Coolant (Spindle : Grbl_Parser.Spindle_Direction;
+   procedure Handle_Spindle_Coolant (Spindle : Integer;
                                      Flood : Boolean; Mist : Boolean)
    is
    begin
